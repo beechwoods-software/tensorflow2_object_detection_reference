@@ -1,8 +1,8 @@
-# video_object_detection
+# tensorflow2_object_detection_reference
 
-A docker based app to detect the presence and position of a box that is manipulated by a robot and generate REST events based on those events.
+A docker container that uses a (slightly) modified version of the tensorflow.org object detection loop example for tensorflow2. 
 
-This code was adapted from the code found at https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/auto_examples/object_detection_camera.html#sphx-glr-auto-examples-object-detection-camera-py
+This code was adapted from the code found at https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/tensorflow-1.14/install.html
 
 # To use it:
 
