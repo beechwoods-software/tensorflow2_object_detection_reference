@@ -14,7 +14,7 @@ For x86-64 platform
 > docker build -f Dockerfile.amd64 -t tf2-objectdetection-example .
 
 For ARM-64 platform
-> docker build -f Dockerfile.rm64 -t tf2-objectdetection-example .
+> docker build -f Dockerfile.arm64 -t tf2-objectdetection-example .
 
 
 Configure script (see bellow)
