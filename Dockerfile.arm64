@@ -4,10 +4,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 RUN apt-get install software-properties-common -y
 
-# "security.ubuntu" for x86 "ports.ubuntu" for ARM 
-#RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu jammy-security main"
-#RUN add-apt-repository "deb http://ports.ubuntu.com/ubuntu-ports jammy-security main"
-
 #install python3.7
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update
@@ -85,10 +81,6 @@ RUN pip3 install tensorflow_addons-0.14.0.dev0-cp37-cp37m-linux_aarch64.whl
 # Install tensorflow models object detection
 RUN GIT_SSL_NO_VERIFY=true git clone -q https://github.com/tensorflow/models /usr/local/lib/python3.7/dist-packages/tensorflow/models
 RUN ( cd /usr/local/lib/python3.7/dist-packages/tensorflow/models/research; cp object_detection/packages/tf2/setup.py . ; python3 -m pip install --force --no-dependencies . ) 
-
-#Install cocoapi - figure out why this fails with the "Python.h" thing?
-#RUN ( git clone https://github.com/cocodataset/cocoapi.git; cd cocoapi/PythonAPI; make; cp -r pycocotools /usr/local/lib/python3.7/dist-packages/tensorflow/models/research/ )
-
 
 # Minimize image size 
 RUN (apt-get autoremove -y; \
