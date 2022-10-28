@@ -1,0 +1,101 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+RUN apt-get install software-properties-common -y
+
+# "security.ubuntu" for x86 "ports.ubuntu" for ARM 
+#RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu jammy-security main"
+#RUN add-apt-repository "deb http://ports.ubuntu.com/ubuntu-ports jammy-security main"
+
+#install python3.7
+RUN add-apt-repository -y ppa:deadsnakes/ppa
+RUN apt-get update
+RUN apt-get install -y python3.7
+RUN ( cd /usr/bin; rm -f python3; ln -s python3.7 python3 )
+RUN ls -la /usr/bin/python*
+RUN python3 --version
+
+# Install system packages
+RUN apt-get -qq update && apt-get -qq install --no-install-recommends -y \ 
+ python3-dev \
+ python3.7-distutils \
+ python3-pip \
+ python3-pil \
+ python3-lxml \
+ python3-tk \
+ build-essential \
+ cmake \ 
+ git \ 
+ libgtk2.0-dev \ 
+ pkg-config \ 
+ libavcodec-dev \ 
+ libavformat-dev \ 
+ libswscale-dev \ 
+ libtbb2 \
+ libtbb-dev \ 
+ libjpeg-dev \
+ libpng-dev \
+ libtiff-dev \
+ x11-apps \
+ wget \
+ vim \
+ ffmpeg \
+ unzip \
+ python3-opencv \
+ protobuf-compiler \
+ && rm -rf /var/lib/apt/lists/* 
+
+# libjasper-dev \
+# libdc1394-22-dev \
+
+RUN ls -la /usr/bin/python*
+RUN python3 --version
+
+# set up link to "python3" from "python"
+RUN ( cd /usr/bin; ln -s python3 python )
+
+# Install core packages 
+#RUN wget -q -O /tmp/get-pip.py --no-check-certificate https://bootstrap.pypa.io/get-pip.py && python3 /tmp/get-pip.py
+RUN python3.7 -m pip install \
+ tensorflow==2.10.0 \
+ tensorflow-io==0.27.0 \
+ tf_slim==1.1.0 \
+ scipy==1.7.3 \
+ numpy==1.21.6 \
+ matplotlib==3.5.3 \
+ pandas==1.3.5 \
+ pillow==9.2.0 \
+ requests==2.22.0 \
+ protobuf==3.19.6 \
+ pyyaml==5.4.1 \
+ gin-config==0.5.0 \
+ setuptools==65.4.1 \
+ cython==0.29.32 \
+ opencv-python==4.6.0.66
+
+# Setting up working directory 
+RUN mkdir /lab
+WORKDIR /lab
+
+# install tensorflow addons
+RUN wget https://github.com/Qengineering/TensorFlow-Addons-Raspberry-Pi_64-bit/raw/main/tensorflow_addons-0.14.0.dev0-cp37-cp37m-linux_aarch64.whl
+RUN pip3 install tensorflow_addons-0.14.0.dev0-cp37-cp37m-linux_aarch64.whl
+
+# Install tensorflow models object detection
+RUN GIT_SSL_NO_VERIFY=true git clone -q https://github.com/tensorflow/models /usr/local/lib/python3.7/dist-packages/tensorflow/models
+RUN ( cd /usr/local/lib/python3.7/dist-packages/tensorflow/models/research; cp object_detection/packages/tf2/setup.py . ; python3 -m pip install --force --no-dependencies . ) 
+
+#Install cocoapi - figure out why this fails with the "Python.h" thing?
+#RUN ( git clone https://github.com/cocodataset/cocoapi.git; cd cocoapi/PythonAPI; make; cp -r pycocotools /usr/local/lib/python3.7/dist-packages/tensorflow/models/research/ )
+
+
+# Minimize image size 
+RUN (apt-get autoremove -y; \
+     apt-get autoclean -y)
+
+# Set TF object detection available
+ENV PYTHONPATH "$PYTHONPATH:/usr/local/lib/python3.7/dist-packages/tensorflow/models:/usr/local/lib/python3.7/dist-packages/tensorflow/models/research:/usr/local/lib/python3.7/dist-packages/tensorflow/models/research/slim"
+RUN cd /usr/local/lib/python3.7/dist-packages/tensorflow/models/research && protoc object_detection/protos/*.proto --python_out=.
+
+CMD bash exec.sh
