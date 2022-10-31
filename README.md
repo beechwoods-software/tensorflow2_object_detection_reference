@@ -2,7 +2,7 @@
 
 A docker container that uses a (slightly) modified version of the tensorflow.org object detection loop example for tensorflow2. 
 
-This code was adapted from the code found at https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/tensorflow-1.14/install.html
+This code was adapted from the code found at https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/auto_examples/object_detection_camera.html
 
 # To use it:
 
